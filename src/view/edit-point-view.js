@@ -155,7 +155,7 @@ function createEditPointTemplate() {
         </section>
         </section>
     </form>`
-  )
+  );
 }
 
 export default class EditPointView {
@@ -165,7 +165,7 @@ export default class EditPointView {
 
   getElement() {
     if (!this.element) {
-        this.element = createElement(this.getTemplate());
+      this.element = createElement(this.getTemplate());
     }
 
     return this.element;

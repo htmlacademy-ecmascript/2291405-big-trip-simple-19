@@ -33,7 +33,7 @@ function createTripTemplate() {
         </button>
       </div>
     </li>`
-  )
+  );
 }
 
 
@@ -44,7 +44,7 @@ export default class TripView {
 
   getElement() {
     if (!this.element) {
-        this.element = createElement(this.getTemplate());
+      this.element = createElement(this.getTemplate());
     }
 
     return this.element;

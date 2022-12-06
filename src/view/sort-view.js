@@ -29,7 +29,7 @@ function createSortTemplate() {
           <label class="trip-sort__btn" for="sort-offer">Offers</label>
         </div>
     </form>`
-  )
+  );
 }
 
 export default class SortView {
@@ -39,7 +39,7 @@ export default class SortView {
 
   getElement() {
     if (!this.element) {
-        this.element = createElement(this.getTemplate());
+      this.element = createElement(this.getTemplate());
     }
 
     return this.element;

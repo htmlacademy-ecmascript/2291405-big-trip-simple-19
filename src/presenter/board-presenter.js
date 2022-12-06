@@ -22,5 +22,5 @@ export default class BoardPresenter {
     }
 
     render(new AddNewPointView(), this.boardContainer);
- }
+  }
 }
