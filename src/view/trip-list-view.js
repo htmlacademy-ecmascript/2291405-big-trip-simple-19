@@ -6,19 +6,19 @@ function createTripListTemplate() {
 
 
 export default class TripListView {
-    getTemplate() {
-      return createTripListTemplate();
-    }
-  
-    getElement() {
-      if (!this.element) {
+  getTemplate() {
+    return createTripListTemplate();
+  }
+
+  getElement() {
+    if (!this.element) {
         this.element = createElement(this.getTemplate());
-      }
-  
-      return this.element;
     }
-  
-    removeElement() {
-      this.element = null;
-    }
+
+    return this.element;
+  }
+
+  removeElement() {
+    this.element = null;
+  }
 }

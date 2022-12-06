@@ -7,13 +7,13 @@ import {render} from '../render.js';
 
 export default class BoardPresenter {
   tripListComponent = new TripListView();
-  
+
   constructor({boardContainer}) {
     this.boardContainer = boardContainer;
   }
-  
+
   init() {
-    render(new EditPointView(), this.boardContainer);   
+    render(new EditPointView(), this.boardContainer);
     render(new SortView(), this.boardContainer);
     render(this.tripListComponent, this.boardContainer);
 
