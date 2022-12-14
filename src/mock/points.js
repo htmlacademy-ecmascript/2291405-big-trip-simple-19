@@ -78,34 +78,6 @@ const mockDestinations = [
   }
 ];
 
-const mockOffers = [
-  {
-    id: 1,
-    title: 'Добавить багаж',
-    price: 500
-  },
-  {
-    id: 2,
-    title: 'Перейти в комфорт-класс',
-    price: 2500
-  },
-  {
-    id: 3,
-    title: 'Включить завтрак',
-    price: 1200
-  },
-  {
-    id: 4,
-    title: 'Выбрать место',
-    price: 1000
-  },
-  {
-    id: 5,
-    title: 'Поездка на поезде',
-    price: 900
-  }
-];
-
 const mockOffersByType = [
   {
     type: 'sightseeing',
