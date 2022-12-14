@@ -8,12 +8,13 @@ import {render} from '../render.js';
 export default class BoardPresenter {
   tripListComponent = new TripListView();
 
-  constructor({boardContainer}) {
+  constructor({boardContainer, dataModel}) {
     this.boardContainer = boardContainer;
+    this.dataModel = dataModel;
   }
 
   init() {
-    render(new EditPointView(), this.boardContainer);
+    render(new EditPointView(this.dataModel.getData()), this.boardContainer);
     render(new SortView(), this.boardContainer);
     render(this.tripListComponent, this.boardContainer);
 
@@ -21,6 +22,6 @@ export default class BoardPresenter {
       render(new TripView(), this.tripListComponent.getElement());
     }
 
-    render(new AddNewPointView(), this.boardContainer);
+    render(new AddNewPointView(this.dataModel.getNewData()), this.boardContainer);
   }
 }
