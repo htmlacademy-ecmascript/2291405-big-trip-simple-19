@@ -1,14 +1,30 @@
 import dayjs from 'dayjs';
 import {POINT_TYPES} from './const.js';
+import {mockOffersByType} from './mock/points.js';
 
-const DATE_FORMAT = 'DD/MM/YY hh:mm';
 
 function getRandomArrayElement(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
 function getHumanizeDate(date) {
-  return dayjs(date).format(DATE_FORMAT);
+  return dayjs(date).format('DD/MM/YY HH:mm');
+}
+
+function getDateWithoutTime(date) {
+  return dayjs(date).format('YYYY-MM-DD');
+}
+
+function getDayFromDate(date) {
+  return dayjs(date).format('MMM DD');
+}
+
+function getTimeFromDate(date) {
+  return dayjs(date).format('hh:mm');
+}
+
+function getDateWithoutSeconds(date) {
+  return dayjs(date).format('YYYY-MM-DDThh:mm');
 }
 
 function getPairsFromMap(data) {
@@ -17,9 +33,9 @@ function getPairsFromMap(data) {
   return result;
 }
 
-function getAviableOffers(offersByType, pointType) {
+function getAviableOffers(pointType) {
   pointType = (pointType) ? pointType : getFirstMapElement(POINT_TYPES);
-  return offersByType.find((offer) => offer.type === pointType).offers;
+  return mockOffersByType.find((offer) => offer.type === pointType).offers;
 }
 
 function isNotEmptyArray(data) {
@@ -42,4 +58,7 @@ function getFirstMapElement(data) {
   return data.keys().next().value;
 }
 
-export {getRandomArrayElement, getHumanizeDate, getPairsFromMap, getAviableOffers, isNotEmptyArray, getValueFromMap, getNowDate, hasDestination, getFirstMapElement};
+export {getRandomArrayElement, getHumanizeDate, getPairsFromMap, getAviableOffers,
+  isNotEmptyArray, getValueFromMap, getNowDate, hasDestination, getFirstMapElement,
+  getDateWithoutTime, getDayFromDate, getTimeFromDate, getDateWithoutSeconds
+};

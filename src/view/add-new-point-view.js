@@ -1,6 +1,7 @@
 import {createElement} from '../render.js';
-import {getHumanizeDate, getPairsFromMap, isNotEmptyArray, getValueFromMap, hasDestination, getFirstMapElement} from '../utils.js';
+import {getHumanizeDate, getPairsFromMap, isNotEmptyArray, getValueFromMap, hasDestination, getFirstMapElement, getAviableOffers} from '../utils.js';
 import {POINT_TYPES} from '../const.js';
+
 
 function createNewPointOffersTemplate(aviableOffers, offers) {
   const checkOfferPoint = (offerId) => (offers.includes(offerId)) ? 'checked' : '';
@@ -27,9 +28,10 @@ function createPointTypeTemplate(pointType) {
     </div>`).join('\n');
 }
 
-function createNewPointTemplate(data) {
-  const {point, aviableOffers, aviableDestinations} = data;
+function createNewPointTemplate(point, aviableDestinations) {
   const {destination, dateFrom, dateTo, offers, type, basePrice} = point;
+
+  const aviableOffers = getAviableOffers(type);
 
   const offersTemplate = createNewPointOffersTemplate(aviableOffers, offers);
 
@@ -111,12 +113,13 @@ function createNewPointTemplate(data) {
 
 
 export default class AddNewPointView {
-  constructor(data) {
-    this.data = data;
+  constructor(point, aviableDestinations) {
+    this.point = point;
+    this.aviableDestinations = aviableDestinations;
   }
 
   getTemplate() {
-    return createNewPointTemplate(this.data);
+    return createNewPointTemplate(this.point, this.aviableDestinations);
   }
 
   getElement() {

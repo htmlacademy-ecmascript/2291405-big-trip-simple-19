@@ -10,4 +10,12 @@ const POINT_TYPES = new Map([
   ['restaurant', 'Ресторан'],
 ]);
 
-export {POINT_TYPES};
+const SORT_TYPES = new Map([
+  ['day', 'Day'],
+  ['event', 'Event'],
+  ['time', 'Time'],
+  ['price', 'Price'],
+  ['offer', 'Offers']
+]);
+
+export {POINT_TYPES, SORT_TYPES};

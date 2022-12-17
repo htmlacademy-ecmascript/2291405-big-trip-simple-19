@@ -4,25 +4,25 @@ import {getRandomArrayElement} from '../utils.js';
 const mockPoints = [
   {
     id: 1,
-    destionation: 1,
-    dateFrom: '2022-07-10T22:55:56.845Z',
-    dateTo: '2022-07-11T11:22:13.375Z',
+    destination: 1,
+    dateFrom: '2022-07-10T16:15:56.845Z',
+    dateTo: '2022-07-11T05:07:13.375Z',
     offers: [1, 4],
     basePrice: 5800,
     type: 'train'
   },
   {
     id: 2,
-    destionation: 3,
-    dateFrom: '2022-09-26T22:55:56.845Z',
-    dateTo: '2022-10-01T11:22:13.375Z',
+    destination: 3,
+    dateFrom: '2022-09-15T10:00:56.845Z',
+    dateTo: '2022-09-15T12:00:13.375Z',
     offers: [],
     basePrice: 500,
     type: 'sightseeing'
   },
   {
     id: 3,
-    destionation: 2,
+    destination: 2,
     dateFrom: '2022-09-26T22:55:56.845Z',
     dateTo: '2022-10-01T11:22:13.375Z',
     offers: [3],
@@ -144,4 +144,9 @@ function getRandomPoint() {
   return getRandomArrayElement(mockPoints);
 }
 
-export {getRandomPoint, mockOffersByType, mockDestinations};
+function getPointsSortByDate() {
+  return mockPoints.sort((p) => p.dateTo);
+}
+
+
+export {getRandomPoint, mockOffersByType, getPointsSortByDate, mockDestinations};
