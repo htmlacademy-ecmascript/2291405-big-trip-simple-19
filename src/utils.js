@@ -20,7 +20,7 @@ function getDayFromDate(date) {
 }
 
 function getTimeFromDate(date) {
-  return dayjs(date).format('hh:mm');
+  return dayjs(date).format('HH:mm');
 }
 
 function getDateWithoutSeconds(date) {
