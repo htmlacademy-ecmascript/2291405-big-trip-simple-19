@@ -2,6 +2,7 @@ import EditPointView from '../view/edit-point-view.js';
 import SortView from '../view/sort-view.js';
 import TripListView from '../view/trip-list-view.js';
 import TripView from '../view/trip-view.js';
+import EmptyListView from '../view/empty-list-view.js';
 import {render} from '../render.js';
 import {mockDestinations} from '../mock/points.js';
 
@@ -68,6 +69,11 @@ export default class BoardPresenter {
 
   #renderBoard() {
     render(new SortView(), this.#boardContainer);
+
+    if (!this.#boardPoints.length) {
+      render(new EmptyListView(), this.#boardContainer);
+      return;
+    }
     render(this.#tripListComponent, this.#boardContainer);
 
     for (let i = 0; i < this.#boardPoints.length; i++) {
