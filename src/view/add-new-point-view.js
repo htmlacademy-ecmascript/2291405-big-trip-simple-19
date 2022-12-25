@@ -1,5 +1,6 @@
-import {createElement} from '../render.js';
-import {getHumanizeDate, getPairsFromMap, isNotEmptyArray, getValueFromMap, hasDestination, getFirstMapElement, getAviableOffers, getNowDate} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {getHumanizeDate, getPairsFromMap, isNotEmptyArray, getValueFromMap, hasDestination,
+  getFirstMapElement, getAviableOffers, getNowDate, getAviableDestinations} from '../utils.js';
 import {POINT_TYPES} from '../const.js';
 
 const BLANK_POINT = {
@@ -120,29 +121,17 @@ function createNewPointTemplate(aviableDestinations) {
 }
 
 
-export default class AddNewPointView {
-  #element = null;
+export default class AddNewPointView extends AbstractView {
   #point = null;
   #aviableDestinations = null;
 
-  constructor(point, aviableDestinations) {
+  constructor(point) {
+    super();
     this.#point = point;
-    this.#aviableDestinations = aviableDestinations;
+    this.#aviableDestinations = getAviableDestinations();
   }
 
   get template() {
     return createNewPointTemplate(this.#point, this.#aviableDestinations);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

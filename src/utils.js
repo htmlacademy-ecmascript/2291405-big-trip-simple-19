@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import {POINT_TYPES} from './const.js';
-import {mockOffersByType} from './mock/points.js';
+import {mockDestinations, mockOffersByType} from './mock/points.js';
 
 
 function getRandomArrayElement(items) {
@@ -38,6 +38,10 @@ function getAviableOffers(pointType) {
   return mockOffersByType.find((offer) => offer.type === pointType).offers;
 }
 
+function getAviableDestinations() {
+  return mockDestinations;
+}
+
 function isNotEmptyArray(data) {
   return Boolean(data.length);
 }
@@ -60,5 +64,5 @@ function getFirstMapElement(data) {
 
 export {getRandomArrayElement, getHumanizeDate, getPairsFromMap, getAviableOffers,
   isNotEmptyArray, getValueFromMap, getNowDate, hasDestination, getFirstMapElement,
-  getDateWithoutTime, getDayFromDate, getTimeFromDate, getDateWithoutSeconds
+  getDateWithoutTime, getDayFromDate, getTimeFromDate, getDateWithoutSeconds, getAviableDestinations
 };
