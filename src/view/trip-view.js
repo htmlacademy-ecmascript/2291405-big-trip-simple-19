@@ -1,6 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {getValueFromMap, getDateWithoutTime, getDayFromDate, getTimeFromDate,
-  getDateWithoutSeconds, getAviableOffers, getAviableDestinations} from '../utils.js';
+import {getDateWithoutTime, getDayFromDate, getTimeFromDate,
+  getDateWithoutSeconds} from '../utils/date.js';
+import {getValueFromMap} from '../utils/common.js';
+import {getAviableOffers, getAviableDestinations} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
 
 

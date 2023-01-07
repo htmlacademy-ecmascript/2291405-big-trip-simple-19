@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {getHumanizeDate, getPairsFromMap, isNotEmptyArray, getValueFromMap,
-  hasDestination, getAviableOffers, getAviableDestinations} from '../utils.js';
+import {getHumanizeDate} from '../utils/date.js';
+import {getPairsFromMap, isNotEmptyArray, getValueFromMap} from '../utils/common.js';
+import {hasDestination, getAviableOffers, getAviableDestinations} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
 
 function createEditPointOffersTemplate(aviableOffers, offers) {

@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {getPairsFromMap} from '../utils.js';
+import {getPairsFromMap} from '../utils/common.js';
 
 const SORT_TYPES = new Map([
   ['day', {label: 'Day', checked: true}],
