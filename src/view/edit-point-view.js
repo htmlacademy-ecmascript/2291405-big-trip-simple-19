@@ -1,5 +1,7 @@
-import {createElement} from '../render.js';
-import {getHumanizeDate, getPairsFromMap, isNotEmptyArray, getValueFromMap, hasDestination, getAviableOffers} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {getHumanizeDate} from '../utils/date.js';
+import {getPairsFromMap, isNotEmptyArray, getValueFromMap} from '../utils/common.js';
+import {hasDestination, getAviableOffers, getAviableDestinations} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
 
 function createEditPointOffersTemplate(aviableOffers, offers) {
@@ -115,29 +117,27 @@ function createEditPointTemplate(point, aviableDestinations) {
   );
 }
 
-export default class EditPointView {
-  #element = null;
+export default class EditPointView extends AbstractView {
   #point = null;
   #aviableDestinations = null;
+  #handleFormSubmit = null;
 
-  constructor(point, aviableDestinations) {
+  constructor({point, onFormSubmit}) {
+    super();
     this.#point = point;
-    this.#aviableDestinations = aviableDestinations;
+    this.#aviableDestinations = getAviableDestinations();
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
+    this.element.closest('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
   get template() {
     return createEditPointTemplate(this.#point, this.#aviableDestinations);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }

@@ -1,6 +1,10 @@
-import {createElement} from '../render.js';
-import {getValueFromMap, getDateWithoutTime, getDayFromDate, getTimeFromDate, getDateWithoutSeconds, getAviableOffers} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {getDateWithoutTime, getDayFromDate, getTimeFromDate,
+  getDateWithoutSeconds} from '../utils/date.js';
+import {getValueFromMap} from '../utils/common.js';
+import {getAviableOffers, getAviableDestinations} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
+
 
 function createPointOffersTemplate(aviableOffers, offers) {
   const checkOffersPoint = aviableOffers.filter((offer) => offers.includes(offer.id));
@@ -54,29 +58,26 @@ function createTripTemplate(point, aviableDestinations) {
   );
 }
 
-export default class TripView {
-  #element = null;
+export default class TripView extends AbstractView {
   #point = null;
   #aviableDestinations = null;
+  #handleEditClick = null;
 
-  constructor(point, aviableDestinations) {
+  constructor({point, onEditClick}) {
+    super();
     this.#point = point;
-    this.#aviableDestinations = aviableDestinations;
+    this.#aviableDestinations = getAviableDestinations();
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
     return createTripTemplate(this.#point, this.#aviableDestinations);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }
