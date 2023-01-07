@@ -10,4 +10,9 @@ const POINT_TYPES = new Map([
   ['restaurant', 'Ресторан'],
 ]);
 
-export {POINT_TYPES};
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future'
+};
+
+export {POINT_TYPES, FilterType};
