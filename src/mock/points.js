@@ -5,7 +5,7 @@ const mockPoints = [
   {
     id: 1,
     destination: 1,
-    dateFrom: '2022-07-10T16:15:56.845Z',
+    dateFrom: '2022-01-07T15:05:56.845Z',
     dateTo: '2022-07-11T05:07:13.375Z',
     offers: [1, 4],
     basePrice: 5800,

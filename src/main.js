@@ -2,6 +2,7 @@ import FilterView from './view/filter-view.js';
 import {render} from './render.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import PointsModel from './model/point-model.js';
+import { generateFilter } from './mock/filter.js';
 
 const siteBodyElement = document.querySelector('.page-body');
 const siteHeaderElement = siteBodyElement.querySelector('.page-header');
@@ -10,6 +11,8 @@ const siteControlsFiltersElement = siteHeaderElement.querySelector('.trip-contro
 const pointsModel = new PointsModel();
 const boardPresenter = new BoardPresenter({boardContainer: sectionBoardElement, pointsModel});
 
-render(new FilterView(), siteControlsFiltersElement);
+const filters = generateFilter(pointsModel.points);
+
+render(new FilterView({filters}), siteControlsFiltersElement);
 
 boardPresenter.init();
