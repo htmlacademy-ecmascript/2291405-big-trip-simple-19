@@ -1,15 +1,16 @@
-import EditPointView from '../view/edit-point-view.js';
 import SortView from '../view/sort-view.js';
 import TripListView from '../view/trip-list-view.js';
-import TripView from '../view/trip-view.js';
 import EmptyListView from '../view/empty-list-view.js';
-import {render, replace} from '../framework/render.js';
+import PointPresenter from './point-presenter.js';
+import {render} from '../framework/render.js';
 
 
 export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
   #boardPoints = [];
+
+  #pointPresenters = new Map();
 
   #tripListComponent = new TripListView();
 
@@ -24,52 +25,45 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceFormToListItem.call(this);
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const pointComponent = new TripView({
-      point,
-      onEditClick: () => {
-        replaceListItemToForm.call(this);
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const pointPresenter = new PointPresenter({
+      tripListContainer: this.#tripListComponent.element,
+      onModeChange: this.#handleModeChange
     });
-
-    const pointEditComponent = new EditPointView({
-      point,
-      onFormSubmit: () => {
-        replaceFormToListItem.call(this);
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
-
-    function replaceFormToListItem() {
-      replace(pointComponent, pointEditComponent);
-    }
-
-    function replaceListItemToForm() {
-      replace(pointEditComponent, pointComponent);
-    }
-
-    render(pointComponent, this.#tripListComponent.element);
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #renderBoard() {
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #renderSort() {
     render(new SortView(), this.#boardContainer);
+  }
 
-    if (!this.#boardPoints.length) {
-      render(new EmptyListView(), this.#boardContainer);
-      return;
-    }
-    render(this.#tripListComponent, this.#boardContainer);
-
+  #renderPoints() {
     for (let i = 0; i < this.#boardPoints.length; i++) {
       this.#renderPoint(this.#boardPoints[i]);
     }
+  }
+
+  #renderNoTrips() {
+    render(new EmptyListView(), this.#boardContainer);
+  }
+
+  #renderTripList() {
+    render(this.#tripListComponent, this.#boardContainer);
+  }
+
+  #renderBoard() {
+    this.#renderSort();
+
+    if (!this.#boardPoints.length) {
+      this.#renderNoTrips();
+      return;
+    }
+
+    this.#renderTripList();
+    this.#renderPoints();
   }
 }
