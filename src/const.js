@@ -15,4 +15,10 @@ const FilterType = {
   FUTURE: 'future'
 };
 
-export {POINT_TYPES, FilterType};
+const SortType = {
+  DATE_FROM: 'date-from',
+  PRICE: 'price',
+  NO_SORT: '',
+};
+
+export {POINT_TYPES, FilterType, SortType};
