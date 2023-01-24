@@ -1,10 +1,9 @@
 import {POINT_TYPES} from '../const.js';
 import {mockDestinations, mockOffersByType} from '../mock/points.js';
-import {getFirstMapElement} from './common.js';
 import dayjs from 'dayjs';
 
 function getAviableOffers(pointType) {
-  pointType = (pointType) ? pointType : getFirstMapElement(POINT_TYPES);
+  pointType = (pointType) ? pointType : POINT_TYPES[0];
   return mockOffersByType.find((offer) => offer.type === pointType).offers;
 }
 

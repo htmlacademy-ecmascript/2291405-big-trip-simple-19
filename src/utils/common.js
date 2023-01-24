@@ -21,5 +21,14 @@ function getFirstMapElement(data) {
   return data.keys().next().value;
 }
 
+function getLastWord(text) {
+  const words = text.split(' ');
+  return words[words.length - 1];
+}
+
+function setFirstSymbolToUpperCase(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export {getRandomArrayElement, getPairsFromMap, isNotEmptyArray,
-  getValueFromMap, getFirstMapElement};
+  getValueFromMap, getFirstMapElement, getLastWord, setFirstSymbolToUpperCase};

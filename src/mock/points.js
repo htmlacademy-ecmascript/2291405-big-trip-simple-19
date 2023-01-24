@@ -84,13 +84,27 @@ const mockOffersByType = [
     offers: []
   },
   {
+    type: 'check-in',
+    offers: []
+  },
+  {
     type: 'bus',
     offers: [
       {
         id: 4,
-        title: 'Выбрать место',
+        title: 'Choose seats',
         price: 1000
       }
+    ]
+  },
+  {
+    type: 'taxi',
+    offers: [
+      {
+        id: 2,
+        title: 'Switch to comfort',
+        price: 150
+      },
     ]
   },
   {
@@ -98,19 +112,59 @@ const mockOffersByType = [
     offers: [
       {
         id: 1,
-        title: 'Добавить багаж',
+        title: 'Add luggage',
         price: 500
       },
       {
         id: 2,
-        title: 'Перейти в комфорт-класс',
+        title: 'Switch to comfort',
         price: 2500
       },
       {
         id: 4,
-        title: 'Выбрать место',
+        title: 'Choose seats',
         price: 1000
       }
+    ]
+  },
+  {
+    type: 'drive',
+    offers: [
+      {
+        id: 1,
+        title: 'Add luggage',
+        price: 100
+      }
+    ]
+  },
+  {
+    type: 'restaurant',
+    offers: [
+      {
+        id: 4,
+        title: 'Choose seats',
+        price: 1000
+      },
+    ]
+  },
+  {
+    type: 'ship',
+    offers: [
+      {
+        id: 1,
+        title: 'Add luggage',
+        price: 500
+      },
+      {
+        id: 4,
+        title: 'Choose seats',
+        price: 1000
+      },
+      {
+        id: 3,
+        title: 'Add meal',
+        price: 1200
+      },
     ]
   },
   {
@@ -118,22 +172,22 @@ const mockOffersByType = [
     offers: [
       {
         id: 1,
-        title: 'Добавить багаж',
+        title: 'Add luggage',
         price: 500
       },
       {
         id: 2,
-        title: 'Перейти в комфорт-класс',
+        title: 'Switch to comfort',
         price: 2500
       },
       {
         id: 3,
-        title: 'Включить завтрак',
+        title: 'Add meal',
         price: 1200
       },
       {
         id: 4,
-        title: 'Выбрать место',
+        title: 'Choose seats',
         price: 1000
       }
     ]

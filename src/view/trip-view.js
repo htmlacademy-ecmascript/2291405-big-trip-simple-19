@@ -1,9 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {getDateWithoutTime, getDayFromDate, getTimeFromDate,
   getDateWithoutSeconds} from '../utils/date.js';
-import {getValueFromMap} from '../utils/common.js';
+import {setFirstSymbolToUpperCase} from '../utils/common.js';
 import {getAviableOffers, getAviableDestinations} from '../utils/point.js';
-import {POINT_TYPES} from '../const.js';
 
 
 function createPointOffersTemplate(aviableOffers, offers) {
@@ -22,7 +21,7 @@ function createTripTemplate(point, aviableDestinations) {
 
   const aviableOffers = getAviableOffers(type);
 
-  const namePointType = getValueFromMap(POINT_TYPES, type);
+  const namePointType = setFirstSymbolToUpperCase(type);
 
   const pointDestination = aviableDestinations.find((d) => d.id === destination);
 
