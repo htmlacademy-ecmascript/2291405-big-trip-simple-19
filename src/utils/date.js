@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
 
 function getHumanizeDate(date) {
   date = date ? date : dayjs().toString();
@@ -35,5 +38,12 @@ function isPlannedDate(date) {
   return dayjs(date).isSameOrAfter(dayjs(), 'D');
 }
 
+function convertToDb(date) {
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+
+  return dayjs(date).tz(dayjs.tz.guess());
+}
+
 export { getHumanizeDate, getNowDate, getDateWithoutTime, getDayFromDate,
-  getTimeFromDate, getDateWithoutSeconds, isPlannedDate};
+  getTimeFromDate, getDateWithoutSeconds, isPlannedDate, convertToDb};

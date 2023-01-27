@@ -34,7 +34,7 @@ function createTripTemplate(point, aviableDestinations) {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${namePointType} ${pointDestination.name}</h3>
+        <h3 class="event__title">${namePointType} ${pointDestination ? pointDestination.name : ''}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${getDateWithoutSeconds(dateFrom)}">${getTimeFromDate(dateFrom)}</time>

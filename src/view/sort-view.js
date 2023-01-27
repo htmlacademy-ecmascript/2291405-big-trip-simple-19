@@ -3,7 +3,7 @@ import {getPairsFromMap} from '../utils/common.js';
 import {SortType} from '../const.js';
 
 
-const SORT_TYPES = new Map([
+const SortTypes = new Map([
   ['day', {sort: SortType.DATE_FROM, label: 'Day', checked: true, disabled: false}],
   ['event', {sort: SortType.NO_SORT, label: 'Event', checked: false, disabled: true}],
   ['time', {sort: SortType.NO_SORT, label: 'Time', checked: false, disabled: true}],
@@ -12,8 +12,11 @@ const SORT_TYPES = new Map([
 ]);
 
 
-function createSortTemplate() {
-  const sortTypes = getPairsFromMap(SORT_TYPES);
+function createSortTemplate(currentSortType) {
+  SortTypes.forEach((value, key) => {
+    value.checked = key === currentSortType;
+  });
+  const sortTypes = getPairsFromMap(SortTypes);
 
   const isChecked = (sortType) => (sortType) ? 'checked' : '';
   const isDisabled = (sortType) => (sortType) ? 'disabled' : '';
@@ -30,23 +33,25 @@ function createSortTemplate() {
 
 export default class SortView extends AbstractView {
   #handleSortTypeChange = null;
+  #currentSortType = null;
 
-  constructor({onSortTypeChange}) {
+  constructor({currentSortType, onSortTypeChange}) {
     super();
     this.#handleSortTypeChange = onSortTypeChange;
+    this.#currentSortType = currentSortType;
 
     this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
   get template() {
-    return createSortTemplate();
+    return createSortTemplate(this.#currentSortType);
   }
 
   #sortTypeChangeHandler = (evt) => {
     if (evt.target.tagName !== 'LABEL'){
       return;
     } else {
-      if (SORT_TYPES.get(evt.target.dataset.sortKey).disabled) {
+      if (SortTypes.get(evt.target.dataset.sortKey).disabled) {
         return;
       }
     }

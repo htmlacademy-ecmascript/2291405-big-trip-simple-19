@@ -31,10 +31,10 @@ function getWeightForNullValue(valueA, valueB) {
   return null;
 }
 
-function sortPriceUp(pointA, pointB) {
+function sortPriceDown(pointA, pointB) {
   const weight = getWeightForNullValue(pointA.basePrice, pointB.basePrice);
 
-  return weight ?? pointA.basePrice - pointB.basePrice;
+  return weight ?? pointB.basePrice - pointA.basePrice;
 }
 
 function sortDateUp(pointA, pointB) {
@@ -44,4 +44,4 @@ function sortDateUp(pointA, pointB) {
 }
 
 
-export {getAviableOffers, hasDestination, getAviableDestinations, sortPriceUp, sortDateUp};
+export {getAviableOffers, hasDestination, getAviableDestinations, sortPriceDown, sortDateUp};

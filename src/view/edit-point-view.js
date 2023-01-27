@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getHumanizeDate} from '../utils/date.js';
+import {getHumanizeDate, convertToDb} from '../utils/date.js';
 import {isNotEmptyArray, getLastWord, setFirstSymbolToUpperCase} from '../utils/common.js';
 import {hasDestination, getAviableOffers, getAviableDestinations} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
@@ -12,7 +12,7 @@ function createEditPointOffersTemplate(aviableOffers, offers) {
   const checkOfferPoint = (offerId) => (offers.includes(offerId)) ? 'checked' : '';
 
   return (aviableOffers.map((offer) => `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getLastWord(offer.title)}-1" type="checkbox" name="event-${getLastWord(offer.title)}" ${checkOfferPoint(offer.id)}>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getLastWord(offer.title)}-1" type="checkbox" data-offer-id=${offer.id} name="event-${getLastWord(offer.title)}" ${checkOfferPoint(offer.id)}>
         <label class="event__offer-label" for="event-offer-${getLastWord(offer.title)}-1">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
@@ -83,7 +83,7 @@ function createEditPointTemplate(data) {
               <span class="visually-hidden">Price</span>
               &euro;
               </label>
-              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
+              <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" autocomplete="off" value=${basePrice}>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -121,11 +121,13 @@ export default class EditPointView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #dateFromDatepicker = null;
   #dateToDatepicker = null;
+  #handleDeleteClick = null;
 
-  constructor({point, onFormSubmit}) {
+  constructor({point, onFormSubmit, onDeleteClick}) {
     super();
     this._setState(EditPointView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
@@ -151,18 +153,32 @@ export default class EditPointView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
     this.element.closest('form').addEventListener('submit', this.#formSubmitHandler);
-    const elements = this.element.querySelectorAll('.event__type-input');
-    for (let i = 0; i < elements.length; i++) {
-      elements[i].addEventListener('click', this.#typePointChangeHandler);
+    const typePointElements = this.element.querySelectorAll('.event__type-input');
+    for (let i = 0; i < typePointElements.length; i++) {
+      typePointElements[i].addEventListener('click', this.#typePointChangeHandler);
     }
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('keyup', this.#destinationValidationHandler);
+
+    const offersElements = this.element.querySelectorAll('.event__offer-checkbox');
+    for (let i = 0; i < offersElements.length; i++) {
+      offersElements[i].addEventListener('change', this.#offersChangeHandler);
+    }
+
+    this.element.querySelector('.event__input--price').addEventListener('keydown', this.#priceValidationHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
 
     this.#setDatepickers();
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #typePointChangeHandler = (evt) => {
@@ -173,11 +189,31 @@ export default class EditPointView extends AbstractStatefulView {
     });
   };
 
+  #offersChangeHandler = () => {
+    const checkedOffers = document.querySelectorAll('.event__offer-checkbox:checked');
+    this._setState({
+      offers: [...checkedOffers].map((e) => Number(e.dataset.offerId))
+    });
+  };
+
   #destinationChangeHandler = (evt) => {
     const destination = this._state.aviableDestinations.find((d) => d.name === evt.target.value);
     this.updateElement({
       destination: destination ? destination.id : null,
     });
+  };
+
+  #destinationValidationHandler = (evt) => {
+    let isValid = false;
+    const matchExp = new RegExp(`^${evt.target.value}`);
+    this._state.aviableDestinations.forEach((value) => {
+      if ((matchExp.test(value.name)) && evt.target.value) {
+        isValid = true;
+      }
+    });
+    if (!isValid) {
+      evt.target.value = evt.target.value.slice(0, -1);
+    }
   };
 
   #setDatepickers() {
@@ -187,6 +223,7 @@ export default class EditPointView extends AbstractStatefulView {
         dateFormat: 'd/m/Y H:i',
         enableTime: true,
         defaultDate: this._state.dateFrom,
+        'time_24hr': true,
         onChange: this.#dateFromChangeHandler,
       },
     );
@@ -204,13 +241,27 @@ export default class EditPointView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([date]) => {
     this.updateElement({
-      dateFrom: date
+      dateFrom: convertToDb(date).toISOString()
     });
   };
 
   #dateToChangeHandler = ([date]) => {
     this.updateElement({
-      dateTo: date
+      dateTo: convertToDb(date).toISOString()
+    });
+  };
+
+  #priceValidationHandler = (evt) => {
+    const charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode < 96) {
+      evt.preventDefault();
+    }
+  };
+
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value
     });
   };
 
