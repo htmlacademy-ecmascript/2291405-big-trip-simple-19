@@ -289,7 +289,6 @@ export default class NewPointView extends AbstractStatefulView {
     }
 
     const point = {...state};
-    console.log(point);
 
     delete point.aviableOffers;
     delete point.aviableDestinations;
