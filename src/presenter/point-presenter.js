@@ -1,6 +1,9 @@
 import {render, replace, remove} from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import TripView from '../view/trip-view.js';
+import {UserAction, UpdateType} from '../const.js';
+import {isPlannedDate} from '../utils/date.js';
+
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -16,14 +19,17 @@ export default class PointPresenter {
   #mode = Mode.DEFAULT;
 
   #handleModeChange = null;
+  #handleDataChange = null;
 
-  constructor({tripListContainer, onModeChange}) {
+  constructor({tripListContainer, onModeChange, onDataChange}) {
     this.#tripListContainer = tripListContainer;
     this.#handleModeChange = onModeChange;
+    this.#handleDataChange = onDataChange;
   }
 
   init(point) {
     this.#point = point;
+    //console.log(point);
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
@@ -36,6 +42,7 @@ export default class PointPresenter {
     this.#pointEditComponent = new EditPointView({
       point,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -82,9 +89,25 @@ export default class PointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #handleFormSubmit = () => {
+  // проверка, попадают ли новые данные в фильтры 7.6
+  #handleFormSubmit = (point) => {
+    const isPatchUpdate = isPlannedDate(point.dateFrom);
+
     this.#replaceFormToListItem();
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isPatchUpdate ? UpdateType.PATCH : UpdateType.MINOR,
+      point,
+    );
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 
   #escKeyDownHandler = (evt) => {

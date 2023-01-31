@@ -23,8 +23,8 @@ const mockPoints = [
   {
     id: 3,
     destination: 2,
-    dateFrom: '2022-09-26T22:55:56.845Z',
-    dateTo: '2022-10-01T11:22:13.375Z',
+    dateFrom: '2023-09-26T22:55:56.845Z',
+    dateTo: '2023-10-01T11:22:13.375Z',
     offers: [3],
     basePrice: 7500,
     type: 'flight'
