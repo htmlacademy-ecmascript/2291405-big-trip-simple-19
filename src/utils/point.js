@@ -1,14 +1,10 @@
 import {POINT_TYPES} from '../const.js';
-import {mockDestinations, mockOffersByType} from '../mock/points.js';
 import dayjs from 'dayjs';
 
-function getAviableOffers(pointType) {
-  pointType = (pointType) ? pointType : POINT_TYPES[0];
-  return mockOffersByType.find((offer) => offer.type === pointType).offers;
-}
 
-function getAviableDestinations() {
-  return mockDestinations;
+function getOffersByType(offers, pointType) {
+  pointType = (pointType) ? pointType : POINT_TYPES[0];
+  return offers.find((offer) => offer.type === pointType).offers;
 }
 
 function hasDestination(destination) {
@@ -44,4 +40,4 @@ function sortDateUp(pointA, pointB) {
 }
 
 
-export {getAviableOffers, hasDestination, getAviableDestinations, sortPriceDown, sortDateUp};
+export {getOffersByType, hasDestination, sortPriceDown, sortDateUp};

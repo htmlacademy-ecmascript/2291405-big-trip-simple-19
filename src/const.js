@@ -15,6 +15,10 @@ const FilterType = {
   FUTURE: 'future'
 };
 
+const ErrorType = {
+  LOADING: 'loading'
+};
+
 const SortType = {
   DATE_FROM: 'day',
   PRICE: 'price',
@@ -31,6 +35,16 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  ITIN: 'INIT',
+  LOAD: 'LOAD'
 };
 
-export {POINT_TYPES, FilterType, SortType, UserAction, UpdateType};
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
+const AUTHORIZATION = 'Basic 57enTLxAoRqkx6X';
+const END_POINT = 'https://19.ecmascript.pages.academy/big-trip-simple';
+
+export {POINT_TYPES, FilterType, ErrorType, SortType, UserAction, UpdateType, Method, AUTHORIZATION, END_POINT};

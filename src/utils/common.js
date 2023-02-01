@@ -1,8 +1,3 @@
-
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
-
 function getPairsFromMap(data) {
   const result = new Array();
   data.forEach((value, key) => result.push([key, value]));
@@ -30,5 +25,5 @@ function setFirstSymbolToUpperCase(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export {getRandomArrayElement, getPairsFromMap, isNotEmptyArray,
+export {getPairsFromMap, isNotEmptyArray,
   getValueFromMap, getFirstMapElement, getLastWord, setFirstSymbolToUpperCase};

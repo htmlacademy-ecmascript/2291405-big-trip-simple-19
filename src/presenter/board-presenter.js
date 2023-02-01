@@ -1,9 +1,10 @@
 import SortView from '../view/sort-view.js';
 import TripListView from '../view/trip-list-view.js';
 import EmptyListView from '../view/empty-list-view.js';
+import LoadingView from '../view/loading-view.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
-import {render, remove} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import {SortType} from '../const.js';
 import {sortPriceDown, sortDateUp} from '../utils/point.js';
 import {UserAction, UpdateType, FilterType} from '../const.js';
@@ -13,37 +14,36 @@ export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
   #filterModel = null;
+  #additionalDataModel = null;
   #newPointPresenter = null;
+  #aviableDestinations = null;
+  #aviableOffers = null;
+  #onNewPointDestroy = null;
 
   #pointPresenters = new Map();
 
   #tripListComponent = new TripListView();
+  #loadingComponent = new LoadingView();
   #emptyListComponent = null;
   #sortComponent = null;
+
   #currentSortType = SortType.DATE_FROM;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
-  constructor({boardContainer, pointsModel, filterModel, onNewPointDestroy}) {
+  constructor({boardContainer, pointsModel, filterModel, additionalDataModel, onNewPointDestroy}) {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-
-    this.#newPointPresenter = new NewPointPresenter({
-      tripListContainer: this.#tripListComponent.element,
-      onDataChange: this.#handleViewAction,
-      onDestroy: onNewPointDestroy
-    });
+    this.#onNewPointDestroy = onNewPointDestroy;
+    this.#additionalDataModel = additionalDataModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#additionalDataModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   #handleModelEvent = (updateType, data) => {
-    //console.log(updateType, data);
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
@@ -59,11 +59,19 @@ export default class BoardPresenter {
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        break;
+      case UpdateType.LOAD:
+        this.#aviableDestinations = data.destinations;
+        this.#aviableOffers = data.offers;
+        break;
     }
   };
 
   createPoint() {
-    this.#currentSortType = SortType.DATE_FROM; //????
+    this.#currentSortType = SortType.DATE_FROM;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newPointPresenter.init();
   }
@@ -74,6 +82,8 @@ export default class BoardPresenter {
     this.#newPointPresenter.destroy();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
+
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
     }
@@ -112,17 +122,31 @@ export default class BoardPresenter {
   }
 
   init() {
+    this.#newPointPresenter = new NewPointPresenter({
+      tripListContainer: this.#tripListComponent.element,
+      aviableDestinations: this.#aviableDestinations,
+      aviableOffers: this.#aviableOffers,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#onNewPointDestroy,
+    });
+
     this.#renderBoard();
   }
 
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       tripListContainer: this.#tripListComponent.element,
+      aviableDestinations: this.#aviableDestinations,
+      aviableOffers: this.#aviableOffers,
       onModeChange: this.#handleModeChange,
       onDataChange: this.#handleViewAction
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
   #handleModeChange = () => {
@@ -146,7 +170,7 @@ export default class BoardPresenter {
       currentSortType: this.#currentSortType
     });
 
-    render(this.#sortComponent, this.#boardContainer);
+    render(this.#sortComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderPoints() {
@@ -166,6 +190,11 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderSort();
 
     if (!this.points.length) {
