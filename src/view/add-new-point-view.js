@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getHumanizeDate, convertToDb, getNowDate} from '../utils/date.js';
 import {isNotEmptyArray, getLastWord, setFirstSymbolToUpperCase} from '../utils/common.js';
-import {hasDestination, getAviableOffers, getAviableDestinations} from '../utils/point.js';
+import {hasDestination, getOffersByType} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
 import flatpickr from 'flatpickr';
 
@@ -125,9 +125,14 @@ export default class NewPointView extends AbstractStatefulView {
   #dateToDatepicker = null;
   #handleDeleteClick = null;
 
-  constructor({onFormSubmit, onDeleteClick}) {
+  #aviableOffers = null;
+  #aviableDestinations = null;
+
+  constructor({aviableDestinations, aviableOffers, onFormSubmit, onDeleteClick}) {
     super();
-    this._setState(NewPointView.parsePointToState(BLANK_POINT));
+    this.#aviableOffers = aviableOffers;
+    this.#aviableDestinations = aviableDestinations;
+    this._setState(NewPointView.parsePointToState(BLANK_POINT, aviableDestinations, aviableOffers));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
     this._restoreHandlers();
@@ -191,7 +196,7 @@ export default class NewPointView extends AbstractStatefulView {
 
   #typePointChangeHandler = (evt) => {
     this.updateElement({
-      aviableOffers: getAviableOffers(evt.target.value),
+      aviableOffers: getOffersByType(this.#aviableOffers, evt.target.value),
       offers: [],
       type: evt.target.value,
     });
@@ -268,14 +273,14 @@ export default class NewPointView extends AbstractStatefulView {
 
   reset(point) {
     this.updateElement(
-      NewPointView.parsePointToState(point),
+      NewPointView.parsePointToState(point, this.#aviableDestinations, this.#aviableOffers),
     );
   }
 
-  static parsePointToState(point) {
+  static parsePointToState(point, aviableDestinations, aviableOffers) {
     return {...point,
-      aviableDestinations: getAviableDestinations(),
-      aviableOffers: getAviableOffers(point.type),
+      aviableDestinations: aviableDestinations,
+      aviableOffers: getOffersByType(aviableOffers, point.type),
     };
   }
 

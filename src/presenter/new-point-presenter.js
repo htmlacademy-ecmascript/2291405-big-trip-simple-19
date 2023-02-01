@@ -9,9 +9,14 @@ export default class NewPointPresenter {
   #handleDestroy = null;
 
   #pointAddComponent = null;
+  #aviableOffers = null;
+  #aviableDestinations = null;
 
-  constructor({tripListContainer, onDataChange, onDestroy}) {
+  constructor({aviableDestinations, aviableOffers, tripListContainer, onDataChange, onDestroy}) {
     this.#tripListContainer = tripListContainer;
+    this.#aviableOffers = aviableOffers;
+    this.#aviableDestinations = aviableDestinations;
+
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
   }
@@ -22,6 +27,8 @@ export default class NewPointPresenter {
     }
 
     this.#pointAddComponent = new NewPointView({
+      aviableDestinations: this.#aviableDestinations,
+      aviableOffers: this.#aviableOffers,
       onFormSubmit: this.#handleFormSubmit,
       onDeleteClick: this.#handleDeleteClick
     });

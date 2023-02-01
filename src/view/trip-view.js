@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import {getDateWithoutTime, getDayFromDate, getTimeFromDate,
   getDateWithoutSeconds} from '../utils/date.js';
 import {setFirstSymbolToUpperCase} from '../utils/common.js';
-import {getAviableOffers, getAviableDestinations} from '../utils/point.js';
+import {getOffersByType} from '../utils/point.js';
 
 
 function createPointOffersTemplate(aviableOffers, offers) {
@@ -16,16 +16,16 @@ function createPointOffersTemplate(aviableOffers, offers) {
         </li>`).join('\n');
 }
 
-function createTripTemplate(point, aviableDestinations) {
+function createTripTemplate(point, aviableDestinations, aviableOffers) {
   const {destination, dateFrom, dateTo, offers, type, basePrice} = point;
 
-  const aviableOffers = getAviableOffers(type);
+  const offersByType = getOffersByType(aviableOffers, type);
 
   const namePointType = setFirstSymbolToUpperCase(type);
 
   const pointDestination = aviableDestinations.find((d) => d.id === destination);
 
-  const offersTemplate = createPointOffersTemplate(aviableOffers, offers);
+  const offersTemplate = createPointOffersTemplate(offersByType, offers);
 
   return (
     `<li class="trip-events__item">
@@ -60,19 +60,21 @@ function createTripTemplate(point, aviableDestinations) {
 export default class TripView extends AbstractView {
   #point = null;
   #aviableDestinations = null;
+  #aviableOffers = null;
   #handleEditClick = null;
 
-  constructor({point, onEditClick}) {
+  constructor({point, aviableDestinations, aviableOffers, onEditClick}) {
     super();
     this.#point = point;
-    this.#aviableDestinations = getAviableDestinations();
+    this.#aviableDestinations = aviableDestinations;
+    this.#aviableOffers = aviableOffers;
     this.#handleEditClick = onEditClick;
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return createTripTemplate(this.#point, this.#aviableDestinations);
+    return createTripTemplate(this.#point, this.#aviableDestinations, this.#aviableOffers);
   }
 
   #editClickHandler = (evt) => {
