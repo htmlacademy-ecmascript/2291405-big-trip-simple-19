@@ -7,8 +7,10 @@ import PointsModel from './model/point-model.js';
 import FilterModel from './model/filter-model.js';
 import PointsApiService from './services/points-api-service.js';
 import AdditionalApiService from './services/additional-api-service.js';
-import {END_POINT, AUTHORIZATION, ErrorType} from './const.js';
+import {END_POINT, AUTHORIZATION, ErrorType, TimeLimit} from './const.js';
 import AdditionalDataModel from './model/additional-data-model.js';
+import UiBlocker from './framework/ui-blocker/ui-blocker.js';
+
 
 const siteBodyElement = document.querySelector('.page-body');
 const siteHeaderElement = siteBodyElement.querySelector('.page-header');
@@ -19,6 +21,11 @@ const pointsModel = new PointsModel({
 });
 const additionalDataModel = new AdditionalDataModel({
   additionalApiService: new AdditionalApiService(END_POINT, AUTHORIZATION)
+});
+
+const uiBlocker = new UiBlocker({
+  lowerLimit: TimeLimit.LOWER_LIMIT,
+  upperLimit: TimeLimit.UPPER_LIMIT
 });
 
 const filterModel = new FilterModel();
@@ -51,6 +58,7 @@ function handleNewPointFormClose() {
   newPointButtonComponent.element.disabled = false;
 }
 
+uiBlocker.block();
 const errorMessageComponent = new ErrorView({errorType: ErrorType.LOADING});
 additionalDataModel.init()
   .then(() => {
@@ -60,8 +68,11 @@ additionalDataModel.init()
       render(newPointButtonComponent, siteBodyElement.querySelector('.trip-main'));
     }).catch(() => {
       render(errorMessageComponent, sectionBoardElement);
+    }).finally(() => {
+      uiBlocker.unblock();
     });
   })
   .catch(() => {
+    uiBlocker.unblock();
     render(errorMessageComponent, sectionBoardElement);
   });
