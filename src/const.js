@@ -42,9 +42,16 @@ const UpdateType = {
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
+};
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
 };
 
 const AUTHORIZATION = 'Basic 57enTLxAoRqkx6X';
 const END_POINT = 'https://19.ecmascript.pages.academy/big-trip-simple';
 
-export {POINT_TYPES, FilterType, ErrorType, SortType, UserAction, UpdateType, Method, AUTHORIZATION, END_POINT};
+export {POINT_TYPES, FilterType, ErrorType, SortType, UserAction, UpdateType, Method, TimeLimit, AUTHORIZATION, END_POINT};

@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getHumanizeDate, convertToDb} from '../utils/date.js';
+import {getHumanizeDate} from '../utils/date.js';
 import {isNotEmptyArray, getLastWord, setFirstSymbolToUpperCase} from '../utils/common.js';
 import {hasDestination, getOffersByType} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
@@ -7,12 +7,12 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createEditPointOffersTemplate(aviableOffers, offers) {
+function createEditPointOffersTemplate(aviableOffers, offers, isDisabled) {
 
   const checkOfferPoint = (offerId) => (offers.includes(offerId)) ? 'checked' : '';
 
   return (aviableOffers.map((offer) => `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getLastWord(offer.title)}-1" type="checkbox" data-offer-id=${offer.id} name="event-${getLastWord(offer.title)}" ${checkOfferPoint(offer.id)}>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getLastWord(offer.title)}-1" type="checkbox" data-offer-id=${offer.id} name="event-${getLastWord(offer.title)}" ${checkOfferPoint(offer.id)} ${isDisabled ? 'disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${getLastWord(offer.title)}-1">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
@@ -21,22 +21,34 @@ function createEditPointOffersTemplate(aviableOffers, offers) {
     </div>`)).join('\n');
 }
 
-function createPointTypeTemplate(pointType) {
+function createPointTypeTemplate(pointType, isDisabled) {
 
   const checkedTypePoint = (t) => (t === pointType) ? 'checked' : '';
 
   return POINT_TYPES.map((value) => `<div class="event__type-item">
-        <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${value} ${checkedTypePoint(value)}>
+        <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${value} ${checkedTypePoint(value)}  ${isDisabled ? 'disabled' : ''}>
         <label class="event__type-label  event__type-label--${value}" for="event-type-${value}-1">${setFirstSymbolToUpperCase(value)}</label>
     </div>`).join('\n');
 }
 
 function createEditPointTemplate(data) {
-  const {destination, dateFrom, dateTo, offers, type, basePrice, aviableDestinations, aviableOffers} = data;
+  const {
+    destination,
+    dateFrom,
+    dateTo,
+    offers,
+    type,
+    basePrice,
+    aviableDestinations,
+    aviableOffers,
+    isDisabled,
+    isSaving,
+    isDeleting,
+  } = data;
 
-  const offersTemplate = createEditPointOffersTemplate(aviableOffers, offers);
+  const offersTemplate = createEditPointOffersTemplate(aviableOffers, offers, isDisabled);
 
-  const pointTypesTemplate = createPointTypeTemplate(type);
+  const pointTypesTemplate = createPointTypeTemplate(type, isDisabled);
 
   const pointDestination = aviableDestinations.find((d) => d.id === destination);
 
@@ -86,8 +98,8 @@ function createEditPointTemplate(data) {
               <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" autocomplete="off" value=${basePrice}>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset"  ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
           <button class="event__rollup-btn" type="button">
               <span class="visually-hidden">Open event</span>
           </button>
@@ -169,6 +181,8 @@ export default class EditPointView extends AbstractStatefulView {
       offersElements[i].addEventListener('change', this.#offersChangeHandler);
     }
 
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+
     this.element.querySelector('.event__input--price').addEventListener('keydown', this.#priceValidationHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
 
@@ -245,19 +259,19 @@ export default class EditPointView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([date]) => {
     this.updateElement({
-      dateFrom: convertToDb(date).toISOString()
+      dateFrom: date
     });
   };
 
   #dateToChangeHandler = ([date]) => {
     this.updateElement({
-      dateTo: convertToDb(date).toISOString()
+      dateTo: date
     });
   };
 
   #priceValidationHandler = (evt) => {
     const charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode < 96) {
+    if (((charCode < 96 || charCode > 105) && (charCode > 58 || charCode < 47) && charCode !== 8) || (evt.shiftKey)) {
       evt.preventDefault();
     }
   };
@@ -279,6 +293,9 @@ export default class EditPointView extends AbstractStatefulView {
     return {...point,
       aviableDestinations: aviableDestinations,
       aviableOffers: getOffersByType(aviableOffers, point.type),
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
@@ -287,6 +304,9 @@ export default class EditPointView extends AbstractStatefulView {
 
     delete point.aviableOffers;
     delete point.aviableDestinations;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }

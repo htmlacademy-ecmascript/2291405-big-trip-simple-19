@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getHumanizeDate, convertToDb, getNowDate} from '../utils/date.js';
+import {getHumanizeDate, getNowDate} from '../utils/date.js';
 import {isNotEmptyArray, getLastWord, setFirstSymbolToUpperCase} from '../utils/common.js';
 import {hasDestination, getOffersByType} from '../utils/point.js';
 import {POINT_TYPES} from '../const.js';
@@ -16,9 +16,9 @@ const BLANK_POINT = {
   offers: new Array()
 };
 
-function createNewPointOffersTemplate(aviableOffers) {
+function createNewPointOffersTemplate(aviableOffers, offers, isDisabled) {
   return (aviableOffers.map((offer) => `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getLastWord(offer.title)}-1" type="checkbox" data-offer-id=${offer.id} name="event-${getLastWord(offer.title)}">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getLastWord(offer.title)}-1" type="checkbox" data-offer-id=${offer.id} name="event-${getLastWord(offer.title)}" ${isDisabled ? 'disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${getLastWord(offer.title)}-1">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
@@ -27,22 +27,34 @@ function createNewPointOffersTemplate(aviableOffers) {
     </div>`)).join('\n');
 }
 
-function createPointTypeTemplate(pointType) {
+function createPointTypeTemplate(pointType, isDisabled) {
   pointType = (pointType) ? pointType : POINT_TYPES[0];
   const checkedTypePoint = (t) => (t === pointType) ? 'checked' : '';
 
   return POINT_TYPES.map((value) => `<div class="event__type-item">
-        <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${value} ${checkedTypePoint(value)}>
+        <input id="event-type-${value}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${value} ${checkedTypePoint(value)} ${isDisabled ? 'disabled' : ''}>
         <label class="event__type-label  event__type-label--${value}" for="event-type-${value}-1">${setFirstSymbolToUpperCase(value)}</label>
     </div>`).join('\n');
 }
 
 function createNewPointTemplate(data) {
-  const {destination, dateFrom, dateTo, offers, type, basePrice, aviableDestinations, aviableOffers} = data;
+  const {
+    destination,
+    dateFrom,
+    dateTo,
+    offers,
+    type,
+    basePrice,
+    aviableDestinations,
+    aviableOffers,
+    isDisabled,
+    isSaving,
+    isDeleting,
+  } = data;
 
-  const offersTemplate = createNewPointOffersTemplate(aviableOffers, offers);
+  const offersTemplate = createNewPointOffersTemplate(aviableOffers, offers, isDisabled);
 
-  const pointTypesTemplate = createPointTypeTemplate(type);
+  const pointTypesTemplate = createPointTypeTemplate(type, isDisabled);
 
   const pointDestination = aviableDestinations.find((d) => d.id === destination);
 
@@ -92,8 +104,8 @@ function createNewPointTemplate(data) {
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" autocomplete="off" value=${basePrice}>
             </div>
 
-            <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-            <button class="event__reset-btn" type="reset">Cancel</button>
+            <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+            <button class="event__reset-btn" type="reset"  ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
         </header>
         <section class="event__details">
             ${isNotEmptyArray(aviableOffers) ? `<section class="event__section  event__section--offers">
@@ -247,19 +259,19 @@ export default class NewPointView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([date]) => {
     this.updateElement({
-      dateFrom: convertToDb(date).toISOString()
+      dateFrom: date
     });
   };
 
   #dateToChangeHandler = ([date]) => {
     this.updateElement({
-      dateTo: convertToDb(date).toISOString()
+      dateTo: date
     });
   };
 
   #priceValidationHandler = (evt) => {
     const charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode < 96) {
+    if (((charCode < 96 || charCode > 105) && (charCode > 58 || charCode < 47) && charCode !== 8) || (evt.shiftKey)) {
       evt.preventDefault();
     }
   };
@@ -281,22 +293,28 @@ export default class NewPointView extends AbstractStatefulView {
     return {...point,
       aviableDestinations: aviableDestinations,
       aviableOffers: getOffersByType(aviableOffers, point.type),
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
   static parseStateToPoint(state) {
     if (!state.dateFrom) {
-      state.dateFrom = convertToDb(getNowDate()).toISOString();
+      state.dateFrom = getNowDate().toDate();
     }
 
     if (!state.dateTo) {
-      state.dateTo = convertToDb(getNowDate()).toISOString();
+      state.dateTo = getNowDate().toDate();
     }
 
     const point = {...state};
 
     delete point.aviableOffers;
     delete point.aviableDestinations;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
     return point;
   }
 }
