@@ -11,7 +11,7 @@ const BLANK_POINT = {
   destination: null,
   dateFrom: null,
   dateTo: null,
-  type: POINT_TYPES[0],
+  type: null,
   basePrice: 0,
   offers: new Array()
 };
@@ -49,7 +49,7 @@ function createNewPointTemplate(data) {
     aviableOffers,
     isDisabled,
     isSaving,
-    isDeleting,
+    isCanceling,
   } = data;
 
   const offersTemplate = createNewPointOffersTemplate(aviableOffers, offers, isDisabled);
@@ -58,7 +58,7 @@ function createNewPointTemplate(data) {
 
   const pointDestination = aviableDestinations.find((d) => d.id === destination);
 
-  const namePointType = setFirstSymbolToUpperCase(POINT_TYPES[0]);
+  const namePointType = setFirstSymbolToUpperCase((type) ? type : POINT_TYPES[0]);
 
   return (
     `<form class="event event--edit" action="#" method="post">
@@ -105,7 +105,7 @@ function createNewPointTemplate(data) {
             </div>
 
             <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-            <button class="event__reset-btn" type="reset"  ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+            <button class="event__reset-btn" type="reset"  ${isDisabled ? 'disabled' : ''}>${isCanceling ? 'Cenceling...' : 'Cancel'}</button>
         </header>
         <section class="event__details">
             ${isNotEmptyArray(aviableOffers) ? `<section class="event__section  event__section--offers">
@@ -295,7 +295,7 @@ export default class NewPointView extends AbstractStatefulView {
       aviableOffers: getOffersByType(aviableOffers, point.type),
       isDisabled: false,
       isSaving: false,
-      isDeleting: false,
+      isCanceling: false,
     };
   }
 
@@ -314,7 +314,7 @@ export default class NewPointView extends AbstractStatefulView {
     delete point.aviableDestinations;
     delete point.isDisabled;
     delete point.isSaving;
-    delete point.isDeleting;
+    delete point.isCanceling;
     return point;
   }
 }

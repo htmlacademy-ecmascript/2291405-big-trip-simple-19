@@ -131,18 +131,20 @@ function createEditPointTemplate(data) {
 
 export default class EditPointView extends AbstractStatefulView {
   #handleFormSubmit = null;
+  #handleFormClose = null;
   #dateFromDatepicker = null;
   #dateToDatepicker = null;
   #handleDeleteClick = null;
   #aviableOffers = null;
   #aviableDestinations = null;
 
-  constructor({point, aviableDestinations, aviableOffers, onFormSubmit, onDeleteClick}) {
+  constructor({point, aviableDestinations, aviableOffers, onFormSubmit, onFormClose, onDeleteClick}) {
     super();
     this.#aviableOffers = aviableOffers;
     this.#aviableDestinations = aviableDestinations;
     this._setState(EditPointView.parsePointToState(point, aviableDestinations, aviableOffers));
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormClose = onFormClose;
     this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
@@ -167,7 +169,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
     this.element.closest('form').addEventListener('submit', this.#formSubmitHandler);
     const typePointElements = this.element.querySelectorAll('.event__type-input');
     for (let i = 0; i < typePointElements.length; i++) {
@@ -192,6 +194,11 @@ export default class EditPointView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
+  };
+
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormClose();
   };
 
   #formDeleteClickHandler = (evt) => {

@@ -50,6 +50,7 @@ export default class PointPresenter {
       aviableDestinations: this.#aviableDestinations,
       aviableOffers: this.#aviableOffers,
       onFormSubmit: this.#handleFormSubmit,
+      onFormClose: this.#handleFormClose,
       onDeleteClick: this.#handleDeleteClick
     });
 
@@ -150,6 +151,11 @@ export default class PointPresenter {
       UpdateType.MINOR,
       point,
     );
+  };
+
+  #handleFormClose = () => {
+    this.#replaceFormToListItem();
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #escKeyDownHandler = (evt) => {

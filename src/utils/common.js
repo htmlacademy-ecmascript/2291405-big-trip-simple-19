@@ -8,13 +8,6 @@ function isNotEmptyArray(data) {
   return Boolean(data.length);
 }
 
-function getValueFromMap(data, key) {
-  return data.get(key) ? data.get(key) : '';
-}
-
-function getFirstMapElement(data) {
-  return data.keys().next().value;
-}
 
 function getLastWord(text) {
   const words = text.split(' ');
@@ -25,5 +18,4 @@ function setFirstSymbolToUpperCase(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export {getPairsFromMap, isNotEmptyArray,
-  getValueFromMap, getFirstMapElement, getLastWord, setFirstSymbolToUpperCase};
+export {getPairsFromMap, isNotEmptyArray, getLastWord, setFirstSymbolToUpperCase};
