@@ -5,8 +5,8 @@ import {setFirstSymbolToUpperCase} from '../utils/common.js';
 import {getOffersByType} from '../utils/point.js';
 
 
-function createPointOffersTemplate(aviableOffers, offers) {
-  const checkOffersPoint = aviableOffers.filter((offer) => offers.includes(offer.id));
+function createPointOffersTemplate(availableOffers, offers) {
+  const checkOffersPoint = availableOffers.filter((offer) => offers.includes(offer.id));
 
   return checkOffersPoint.map((offer) =>
     `<li class="event__offer">
@@ -16,14 +16,14 @@ function createPointOffersTemplate(aviableOffers, offers) {
         </li>`).join('\n');
 }
 
-function createTripTemplate(point, aviableDestinations, aviableOffers) {
+function createTripTemplate(point, availableDestinations, availableOffers) {
   const {destination, dateFrom, dateTo, offers, type, basePrice} = point;
 
-  const offersByType = getOffersByType(aviableOffers, type);
+  const offersByType = getOffersByType(availableOffers, type);
 
   const namePointType = setFirstSymbolToUpperCase(type);
 
-  const pointDestination = aviableDestinations.find((d) => d.id === destination);
+  const pointDestination = availableDestinations.find((d) => d.id === destination);
 
   const offersTemplate = createPointOffersTemplate(offersByType, offers);
 
@@ -59,22 +59,22 @@ function createTripTemplate(point, aviableDestinations, aviableOffers) {
 
 export default class TripView extends AbstractView {
   #point = null;
-  #aviableDestinations = null;
-  #aviableOffers = null;
+  #availableDestinations = null;
+  #availableOffers = null;
   #handleEditClick = null;
 
-  constructor({point, aviableDestinations, aviableOffers, onEditClick}) {
+  constructor({point, availableDestinations, availableOffers, onEditClick}) {
     super();
     this.#point = point;
-    this.#aviableDestinations = aviableDestinations;
-    this.#aviableOffers = aviableOffers;
+    this.#availableDestinations = availableDestinations;
+    this.#availableOffers = availableOffers;
     this.#handleEditClick = onEditClick;
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
-    return createTripTemplate(this.#point, this.#aviableDestinations, this.#aviableOffers);
+    return createTripTemplate(this.#point, this.#availableDestinations, this.#availableOffers);
   }
 
   #editClickHandler = (evt) => {
