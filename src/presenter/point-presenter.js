@@ -14,8 +14,8 @@ export default class PointPresenter {
   #tripListContainer = null;
   #pointComponent = null;
   #pointEditComponent = null;
-  #aviableDestinations = null;
-  #aviableOffers = null;
+  #availableDestinations = null;
+  #availableOffers = null;
 
   #point = null;
   #mode = Mode.DEFAULT;
@@ -23,10 +23,10 @@ export default class PointPresenter {
   #handleModeChange = null;
   #handleDataChange = null;
 
-  constructor({tripListContainer, aviableDestinations, aviableOffers, onModeChange, onDataChange}) {
+  constructor({tripListContainer, availableDestinations, availableOffers, onModeChange, onDataChange}) {
     this.#tripListContainer = tripListContainer;
-    this.#aviableDestinations = aviableDestinations;
-    this.#aviableOffers = aviableOffers;
+    this.#availableDestinations = availableDestinations;
+    this.#availableOffers = availableOffers;
 
     this.#handleModeChange = onModeChange;
     this.#handleDataChange = onDataChange;
@@ -40,15 +40,15 @@ export default class PointPresenter {
 
     this.#pointComponent = new TripView({
       point: this.#point,
-      aviableDestinations: this.#aviableDestinations,
-      aviableOffers: this.#aviableOffers,
+      availableDestinations: this.#availableDestinations,
+      availableOffers: this.#availableOffers,
       onEditClick: this.#hanleEditClick,
     });
 
     this.#pointEditComponent = new EditPointView({
       point,
-      aviableDestinations: this.#aviableDestinations,
-      aviableOffers: this.#aviableOffers,
+      availableDestinations: this.#availableDestinations,
+      availableOffers: this.#availableOffers,
       onFormSubmit: this.#handleFormSubmit,
       onFormClose: this.#handleFormClose,
       onDeleteClick: this.#handleDeleteClick
@@ -97,6 +97,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToListItem();
     }
   }
@@ -154,6 +155,7 @@ export default class PointPresenter {
   };
 
   #handleFormClose = () => {
+    this.#pointEditComponent.reset(this.#point);
     this.#replaceFormToListItem();
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
@@ -161,6 +163,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToListItem();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }

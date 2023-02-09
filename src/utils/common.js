@@ -8,7 +8,6 @@ function isNotEmptyArray(data) {
   return Boolean(data.length);
 }
 
-
 function getLastWord(text) {
   const words = text.split(' ');
   return words[words.length - 1];
